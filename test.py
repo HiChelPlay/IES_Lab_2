@@ -2,9 +2,8 @@ import sys
 from time import sleep
 
 from PySide6.QtWidgets import (QApplication, QMainWindow, QMessageBox)
-from PySide6.QtCore import QRect
-from PySide6.QtGui import QStandardItemModel, QStandardItem
-
+from PySide6.QtCore import QRect, QTimer
+from PySide6.QtGui import QStandardItemModel, QStandardItem, QTransform, QPixmap
 
 import random
 
@@ -18,10 +17,10 @@ states = [current.copy()]
 
 def check(cur, moved_item):
     lose_conditions = [
-        [0,1,1,0], [0,1,1,1],
-        [0,1,0,1], [0,1,1,1],
-        [1,0,0,0], [1,0,1,0],
-        [1,0,0,1], [1,0,0,0]
+        [0, 1, 1, 0], [0, 1, 1, 1],
+        [0, 1, 0, 1], [0, 1, 1, 1],
+        [1, 0, 0, 0], [1, 0, 1, 0],
+        [1, 0, 0, 1], [1, 0, 0, 0]
     ]
 
     if cur in lose_conditions:
@@ -83,16 +82,85 @@ class MainWindow(QMainWindow):
         # Подключение сигналов
         self.ui.pushButton.clicked.connect(self.button_clicked)
 
+        # Таймер для последовательного перемещения
+        self.timer = QTimer()
+        self.timer.timeout.connect(self.update_position)
+        self.current_state_index = 0
 
-    goatPos = 100
     def button_clicked(self):
-        for i, state in enumerate(states):
-            goatPos = self.ui.label_2.pos().x()
-            if state[3] == 1:
-                self.ui.label_2.setGeometry(QRect(330, 290, 71, 81))
-            else:
-                self.ui.label_2.setGeometry(QRect(100, 290, 71, 81))
-            sleep(0.2)
+        self.current_state_index = 0
+        self.timer.start(500)  # 500 ms = 0.5 секунды
+        self.ui.textEdit.setText('Человек\tКоза\tКапуста\tВолк\n\n')
+
+
+    def update_position(self):
+        if self.current_state_index < len(states):
+
+            state = states[self.current_state_index]
+            nameState = []
+            for i in state:
+                if i == 0:
+                    nameState.append("Левый")
+                else:
+                    nameState.append("Правый")
+            curTxt = self.ui.textEdit.toPlainText()
+            for i in nameState:
+                newTxt = curTxt + f'{i}\t'
+                curTxt = newTxt
+            newTxt = f'{newTxt}\n'
+            self.ui.textEdit.setText(newTxt)
+
+            #перемещение лодки и человека
+            if state[0] == 1 and self.ui.boat.geometry().x() == 180:
+                self.ui.boat.move(270, self.ui.boat.geometry().y())
+                self.ui.man.move(430, self.ui.man.geometry().y())
+                pixmap = self.ui.boat.pixmap()
+                if pixmap:
+                    mirrored = pixmap.transformed(QTransform().scale(-1, 1))
+                    self.ui.boat.setPixmap(mirrored)
+                pixmap = self.ui.man.pixmap()
+                if pixmap:
+                    mirrored = pixmap.transformed(QTransform().scale(-1, 1))
+                    self.ui.man.setPixmap(mirrored)
+            elif state[0] == 0 and self.ui.boat.geometry().x() == 270:
+                self.ui.boat.move(180, self.ui.boat.geometry().y())
+                self.ui.man.move(100, self.ui.man.geometry().y())
+                pixmap = self.ui.boat.pixmap()
+                if pixmap:
+                    mirrored = pixmap.transformed(QTransform().scale(-1, 1))
+                    self.ui.boat.setPixmap(mirrored)
+                pixmap = self.ui.man.pixmap()
+                if pixmap:
+                    mirrored = pixmap.transformed(QTransform().scale(-1, 1))
+                    self.ui.man.setPixmap(mirrored)
+
+
+            #перемещение остальных
+            list = ['', self.ui.goat, self.ui.cabbage, self.ui.wolf]
+
+            for i, cur in enumerate(list):
+                if i != 0:
+                    print('lol')
+                    if state[i] == 1:
+                        pixmap = cur.pixmap()
+                        if pixmap and cur.geometry().x() == 100:
+                            mirrored = pixmap.transformed(QTransform().scale(-1, 1))
+                            cur.setPixmap(mirrored)
+
+                        # self.ui.goat.setGeometry(QRect(330, 290, 71, 81))
+                        cur.move(430, cur.geometry().y())
+                    else:
+                        pixmap = cur.pixmap()
+                        if pixmap and cur.geometry().x() == 430:
+                            mirrored = pixmap.transformed(QTransform().scale(-1, 1))
+                            cur.setPixmap(mirrored)
+                        # self.ui.goat.setGeometry(QRect(100, 290, 71, 81))
+                        cur.move(100, cur.geometry().y())
+
+            self.current_state_index += 1
+        else:
+            self.timer.stop()
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
