@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>600</height>
+    <width>892</width>
+    <height>601</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,8 +17,8 @@
    <widget class="QPushButton" name="pushButton">
     <property name="geometry">
      <rect>
-      <x>310</x>
-      <y>480</y>
+      <x>380</x>
+      <y>490</y>
       <width>171</width>
       <height>41</height>
      </rect>
@@ -79,7 +79,7 @@
      <rect>
       <x>590</x>
       <y>30</y>
-      <width>201</width>
+      <width>301</width>
       <height>431</height>
      </rect>
     </property>
@@ -141,7 +141,7 @@
      <bool>true</bool>
     </property>
    </widget>
-   <widget class="QLabel" name="goat_2">
+   <widget class="QLabel" name="boat">
     <property name="enabled">
      <bool>true</bool>
     </property>
@@ -163,13 +163,65 @@
      <bool>true</bool>
     </property>
    </widget>
+   <widget class="QTableView" name="Start">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>480</y>
+      <width>146</width>
+      <height>57</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QTableView" name="Goal">
+    <property name="geometry">
+     <rect>
+      <x>200</x>
+      <y>480</y>
+      <width>146</width>
+      <height>57</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_2">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>460</y>
+      <width>141</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Начальное состояние</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_3">
+    <property name="geometry">
+     <rect>
+      <x>198</x>
+      <y>460</y>
+      <width>151</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Конечное состояние</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignCenter</set>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>800</width>
+     <width>892</width>
      <height>33</height>
     </rect>
    </property>

@@ -1,9 +1,7 @@
 import sys
-from time import sleep
 from PySide6.QtWidgets import (QApplication, QMainWindow, QMessageBox)
 from PySide6.QtCore import QRect, QTimer, Qt
 from PySide6.QtGui import QStandardItemModel, QStandardItem, QTransform, QPixmap
-import random
 
 from int2 import Ui_MainWindow
 
@@ -140,45 +138,87 @@ class MainWindow(QMainWindow):
             mirrored = pixmap.transformed(QTransform().scale(-1, 1))
             widget.setPixmap(mirrored)
 
+    def is_valid_state(self, state):
+        """Проверяет, является ли состояние допустимым"""
+        # Коза не должна оставаться с волком без человека
+        if state[1] == state[3] and state[0] != state[1]:
+            return False
+        # Коза не должна оставаться с капустой без человека
+        if state[1] == state[2] and state[0] != state[1]:
+            return False
+        return True
+
+    def generate_next_states(self, current_state):
+        """Генерирует все возможные следующие допустимые состояния"""
+        next_states = []
+        # Определяем на каком берегу находится человек
+        man_pos = current_state[0]
+
+        # Варианты перемещения: ничего, коза, капуста, волк
+        for item in [0, 1, 2, 3]:
+            new_state = current_state.copy()
+            new_state[0] = 1 - man_pos  # Меняем положение человека
+
+            # Если перемещаем предмет, меняем и его положение
+            if item != 0:
+                # Предмет должен быть на том же берегу, что и человек
+                if new_state[item] == man_pos:
+                    new_state[item] = 1 - man_pos
+                else:
+                    continue  # Пропускаем недопустимые перемещения
+
+            # Проверяем допустимость нового состояния
+            if self.is_valid_state(new_state):
+                next_states.append(new_state)
+        return next_states
+
     def search(self):
-        """Ищет решение задачи и сохраняет последовательность состояний в self.states"""
-        current = self._start.copy()
-        self.states = [current.copy()]
-        max_iterations = 1000  # Ограничение на количество итераций
+        """Реализация поиска в глубину (DFS)"""
+        visited = set()
+        stack = []
+        parent = {}
 
-        def is_valid_state(state):
-            # Проверяем, что коза не осталась с волком или капустой без человека
-            if (state[1] == state[3] and state[0] != state[1]) or \
-                    (state[1] == state[2] and state[0] != state[1]):
-                return False
-            return True
+        # Преобразуем списки в кортежи для хранения в множестве
+        start_tuple = tuple(self._start)
+        goal_tuple = tuple(self._goal)
 
-        for _ in range(max_iterations):
-            if current == self._goal:
+        stack.append(start_tuple)
+        visited.add(start_tuple)
+        parent[start_tuple] = None
+
+        found = False
+        current_tuple = None
+
+        # count = 0
+
+        while stack:
+
+            # count += 1
+            # print(f"{count}: {stack}")
+            current_tuple = stack.pop()
+
+            if current_tuple == goal_tuple:
+                found = True
                 break
 
-            # Выбираем что перевозим (0-ничего, 1-коза, 2-капуста, 3-волк)
-            item_to_move = random.choice([0, 1, 2, 3])
+            # Генерируем следующие состояния
+            next_states = self.generate_next_states(list(current_tuple))
+            for state in next_states:
+                state_tuple = tuple(state)
+                if state_tuple not in visited:
+                    visited.add(state_tuple)
+                    parent[state_tuple] = current_tuple
+                    stack.append(state_tuple)
 
-            # Создаем новое состояние
-            new_state = current.copy()
-            new_state[0] = 1 - new_state[0]  # Меняем положение человека
-
-            # Если перевозим предмет, меняем и его положение
-            if item_to_move != 0:
-                new_state[item_to_move] = new_state[0]
-
-            # Проверяем новое состояние
-            if is_valid_state(new_state) and new_state not in self.states:
-                current = new_state.copy()
-                self.states.append(current.copy())
-            else:
-                # Если состояние недопустимо, пробуем снова
-                continue
-
-        # Если не нашли решение, очищаем states
-        if current != self._goal:
-            self.states = []
+        # Восстанавливаем путь
+        self.states = []
+        if found:
+            path = []
+            current_tuple = goal_tuple
+            while current_tuple is not None:
+                path.append(list(current_tuple))
+                current_tuple = parent[current_tuple]
+            self.states = path[::-1]  # Разворачиваем путь, чтобы получить от начала до конца
 
 
 if __name__ == "__main__":
