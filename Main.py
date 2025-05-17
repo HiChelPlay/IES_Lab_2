@@ -173,7 +173,7 @@ class MainWindow(QMainWindow):
         return next_states
 
     def search(self):
-        """Реализация поиска в глубину (DFS)"""
+        """Реализация поиска в глубину"""
         visited = set()
         stack = []
         parent = {}

@@ -29,6 +29,9 @@ class Ui_MainWindow(object):
         self.pushButton = QPushButton(self.centralwidget)
         self.pushButton.setObjectName(u"pushButton")
         self.pushButton.setGeometry(QRect(380, 490, 171, 41))
+        self.pushButton2 = QPushButton(self.centralwidget)
+        self.pushButton2.setObjectName(u"pushButton2")
+        self.pushButton2.setGeometry(QRect(580, 490, 171, 41))
         self.label = QLabel(self.centralwidget)
         self.label.setObjectName(u"label")
         self.label.setGeometry(QRect(18, 35, 561, 421))
@@ -99,7 +102,8 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"Переправка", None))
-        self.pushButton.setText(QCoreApplication.translate("MainWindow", u"\u0412\u044b\u043f\u043e\u043b\u043d\u0438\u0442\u044c", None))
+        self.pushButton.setText(QCoreApplication.translate("MainWindow", u"Поиск в глубину", None))
+        self.pushButton2.setText(QCoreApplication.translate("MainWindow", u"Поиск в ширину", None))
         self.label.setText("")
         self.goat.setText("")
         self.man.setText("")
